@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batatas Elementais</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="tela-inicial">
+  <div class="capa-container">
+    <img src="./imagens/Logo.png" alt="Logo do Jogo" class="logo-capa" />
+    <p class="descricao-jogo">
+      Prepare-se para uma batalha épica entre batatas elementais!
+    </p>
+
+    <!-- Botão Jogar -->
+    <button id="jogarAgoraBtn" class="botao-jogar">
+      🎮 Jogar Agora
+    </button>
+    <br>
+    <!-- Botão Como Jogar -->
+    <button id="comoJogarBtn" class="botao-como-jogar">
+      📘 Como Jogar
+    </button>
+  </div>
+
+  <!-- Painel: Como Jogar -->
+  <div id="comoJogarPainel" class="como-jogar-overlay hidden">
+    <div class="como-jogar-conteudo surgir">
+      <h2>Como Jogar</h2>
+      <img class="como-jogar-img" src="./imagens/Regras.png" alt="">
+      <p class="dica">Escolha sua batata elemental, enfrente oponentes e vença batalhas!</p>
+      <p class="dica">Quem fizer 3 pontos primeiro vence</p>
+
+      <button id="fecharComoJogar" class="botao-jogar fechar-instrucoes">Fechar</button>
+    </div>
+  </div>
+
+  <!-- Painel de Transição -->
+  <div id="painelTransicao" class="painel-transicao hidden">
+    <div class="painel-conteudo surgir">
+      <h2>Preparando a batalha...</h2>
+    </div>
+  </div>
+
+  <script src="capa.js"></script>
+</body>
+
+</html>

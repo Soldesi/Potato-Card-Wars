@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Duelo de Batatas</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <button class="btn-voltar-capa" onclick="voltarParaCapa()">
+  <i class="fas fa-home"></i>
+</button>
+  
+  <!-- Imagem fixa no canto superior direito -->
+  <img src="./imagens/Regras.png" alt="Regras do jogo" class="img-regras">
+
+  <div class="game-container">
+    <img src="./imagens/Logo.png" alt="" class="logo">
+
+    <div id="resultado"></div>
+    <button id="fightBtn" disabled>⚔️ Batalhar</button>
+  </div>
+
+<div class="dica-texto" id="mensagemDica"><p>Selecione uma Carta e aperte Batalhar</p></div>
+
+  <div id="fimDeJogo" class="fim-de-jogo hidden">
+    <h2 id="mensagemFinal"></h2>
+    <button id="jogarNovamente">Jogar Novamente</button>
+  </div>
+
+  <div class="deck" id="deck">
+    <!-- Cartas serão geradas dinamicamente -->
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
