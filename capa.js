@@ -25,3 +25,11 @@ jogarAgoraBtn.addEventListener("click", () => {
     window.location.href = "jogo.html";
   }, 900); // tempo da animação antes de ir para a próxima página
 });
+const modoUnoBtn = document.getElementById("modoUnoBtn");
+
+modoUnoBtn.addEventListener("click", () => {
+  painelTransicao.classList.remove("hidden");
+  setTimeout(() => {
+    window.location.href = "uno.html";
+  }, 900);
+});

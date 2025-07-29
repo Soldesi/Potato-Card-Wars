@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modo UNO - Batatas</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="uno.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+  <button class="btn-voltar-capa" onclick="voltarParaCapa()">
+    <i class="fas fa-home"></i>
+  </button>
+
+  <div class="game-container">
+    <img src="./imagens/Logo.png" alt="Logo" class="logo" />
+    <h2 id="turnoInfo">Sua vez!</h2>
+
+    <p id="cartasRobo" class="cartas-robo">Cartas do Robô: 5</p>
+
+    <div class="deckUNO">
+      <div id="pilhaDescarte" class="pilha-descarte"></div>
+      <button class="comprarBtn" id="comprarBtn">Comprar Carta</button>
+    </div>
+
+    <div id="maoJogador" class="mao-cartas">
+      <!-- Cartas do jogador aparecem aqui -->
+    </div>
+
+    <div id="mensagemUNO" class="dica-texto"></div>
+
+    <div id="fimDeJogo" class="fim-de-jogo hidden">
+      <h2 id="mensagemFinal"></h2>
+      <button id="jogarNovamente">Jogar Novamente</button>
+    </div>
+  </div>
+
+  <!-- Botão de ajuda -->
+<button class="btn-ajuda" onclick="toggleAjuda()">
+  <i class="fas fa-question-circle"></i>
+</button>
+
+<!-- Modal de ajuda -->
+<div id="ajudaModal" class="ajuda-modal hidden">
+  <div class="ajuda-conteudo">
+    <h2>Como jogar</h2>
+    <p>
+      Combine cartas que tenham o mesmo <strong>ELEMENTO</strong> ou o mesmo <strong>VALOR</strong> da carta no topo da pilha de descarte.<br><br>
+      Clique em uma carta para jogá-la. Se não tiver uma carta válida, clique no botão "Comprar Carta".<br><br>
+      O jogo termina quando um jogador ficar sem cartas. Boa sorte!
+    </p>
+    <button onclick="toggleAjuda()">Fechar</button>
+  </div>
+</div>
+
+
+  <script src="uno.js"></script>
+</body>
+
+</html>

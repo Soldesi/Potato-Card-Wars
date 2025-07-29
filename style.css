@@ -301,7 +301,22 @@ button:hover {
   background-color: #fffbe6;
   transform: scale(1.05);
 }
+.botao-uno {
+  padding: 16px 38px;
+  font-size: 20px;
+  background-color: #fffbe6;
+  color: #7a4e00;
+  border: 2px solid #7a4e00;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-weight: bold;
+}
 
+.botao-uno:hover {
+  background-color: #fffbe6;
+  transform: scale(1.05);
+}
 
 .botao-reiniciar-estilizado:hover {
   background-color: #fffbe6;
@@ -429,4 +444,42 @@ button:hover {
 
 .fade-in {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+@media (max-width: 768px) {
+  
+  body {
+    padding: 10px;
+  }
+  .img-regras {
+  width: 15%;
+  }
+  header h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  .deck{
+    width: 80%;
+  }
+  .card{
+    width: 28%;
+  }
+  .logo{
+    width: 40%;
+  }
+  #placarContainer{
+  width: 60%;
+  left: 95px;
+  top: 140px;
+  font-size: 16px;
+  }
+.personagem-img {
+  width: 80px;
+}
+#resultado{
+  margin-top: 160px;
+}
+.result-card img{
+  width: 100px;
+}
 }
