@@ -302,7 +302,7 @@ button:hover {
   transform: scale(1.05);
 }
 .botao-uno {
-  padding: 16px 38px;
+  padding: 16px 18px;
   font-size: 20px;
   background-color: #fffbe6;
   color: #7a4e00;
@@ -445,6 +445,47 @@ button:hover {
 .fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
+.eventos-container {
+  position: fixed;
+  top: 30px;
+  left: 70%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.evento-aleatorio {
+  background-color: #fffbe6;
+  color: #7a4e00;
+  border: 2px solid #7a4e00;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  animation: aparecer 0.3s ease;
+  pointer-events: auto;
+  min-width: 280px;
+  max-width: 90vw;
+  text-align: center;
+  font-weight: bold;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fade-out {
+  animation: desaparecer 0.8s ease forwards;
+}
+
+@keyframes desaparecer {
+  to { opacity: 0; transform: scale(0.9); }
+}
+
 
 @media (max-width: 768px) {
   

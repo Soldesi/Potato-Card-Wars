@@ -17,12 +17,17 @@ const cartas = [
     { nome: "Pescador", imagem: "imagens/16.png", elemento: "agua", valor: 8 },
     { nome: "Lenhador", imagem: "imagens/17.png", elemento: "terra", valor: 5 },
     { nome: "Vampiro", imagem: "imagens/18.png", elemento: "fogo", valor: 10 },
-    { nome: "Tempestade", imagem: "imagens/19.png", elemento: "raio", valor: 10 },
+    { nome: "Tempestade", imagem: "imagens/19.png", elemento: "raio", valor: 12 },
     { nome: "Eletricista", imagem: "imagens/20.png", elemento: "raio", valor: 6 },
     { nome: "Hacker", imagem: "imagens/21.png", elemento: "raio", valor: 7 },
     { nome: "Bateria", imagem: "imagens/22.png", elemento: "raio", valor: 9 },
     { nome: "Dj", imagem: "imagens/23.png", elemento: "raio", valor: 5 },
     { nome: "Mecanico", imagem: "imagens/24.png", elemento: "raio", valor: 4 },
+    { nome: "Policial", imagem: "imagens/25.png", elemento: "raio", valor: 8 },
+    { nome: "Cientista", imagem: "imagens/26.png", elemento: "raio", valor: 10 },
+    { nome: "Soldador", imagem: "imagens/27.png", elemento: "fogo", valor: 7 },
+    { nome: "Aventureiro", imagem: "imagens/28.png", elemento: "terra", valor: 8 },
+    { nome: "Tubarao", imagem: "imagens/29.png", elemento: "agua", valor: 9 },
     { nome: "Troca", imagem: "imagens/troca.png", elemento: "especial", valor: 99 }
 ];
 
@@ -105,9 +110,13 @@ function jogarCarta(index) {
     const podeJogar = isTroca || carta.elemento === cartaAtual.elemento || carta.valor === cartaAtual.valor;
 
     if (podeJogar) {
-if (!isTroca) {
-    cartaAtual = carta;
-}
+        if (!isTroca) {
+            cartaAtual = carta;
+            esconderCartaEspecial();
+        } else {
+            mostrarCartaEspecial(carta);
+        }
+
         maoJogador.splice(index, 1);
 
         if (isTroca) {
@@ -139,7 +148,7 @@ comprarBtn.addEventListener("click", () => {
     const novaCarta = baralho.pop();
     maoJogador.push(novaCarta);
     adicionarCartaAnimadaNaMao(novaCarta);
-    mensagemUNO.textContent = `Você comprou uma carta.`;
+    mensagemUNO.textContent = "Você comprou uma carta.";
 
     turno = "robo";
     atualizarCartasRobo();
@@ -160,47 +169,47 @@ function turnoRobo() {
         maoRobo.splice(cartaIndex, 1);
 
         if (carta.elemento === "especial" && carta.valor === 99) {
+            mostrarCartaEspecial(carta);
             const temp = [...maoRobo];
             maoRobo = [...maoJogador];
             maoJogador = [...temp];
             mensagemUNO.textContent = "Robô usou a carta TROCA! As mãos foram trocadas!";
         } else {
+            esconderCartaEspecial();
             mensagemUNO.textContent = `Robô jogou: ${carta.nome}`;
+            cartaAtual = carta;
         }
 
-if (!(carta.elemento === "especial" && carta.valor === 99)) {
-    cartaAtual = carta;
-}
         if (verificarFimDeJogo("robo")) return;
     } else {
         if (baralho.length > 0) {
             const novaCarta = baralho.pop();
             maoRobo.push(novaCarta);
-            mensagemUNO.textContent = `Robô comprou uma carta.`;
+            mensagemUNO.textContent = "Robô comprou uma carta.";
 
             if (
                 novaCarta.elemento === cartaAtual.elemento ||
                 novaCarta.valor === cartaAtual.valor ||
                 (novaCarta.elemento === "especial" && novaCarta.valor === 99)
             ) {
-if (!(novaCarta.elemento === "especial" && novaCarta.valor === 99)) {
-    cartaAtual = novaCarta;
-}
                 maoRobo.pop();
 
                 if (novaCarta.elemento === "especial" && novaCarta.valor === 99) {
+                    mostrarCartaEspecial(novaCarta);
                     const temp = [...maoRobo];
                     maoRobo = [...maoJogador];
                     maoJogador = [...temp];
                     mensagemUNO.textContent = "Robô comprou e usou TROCA! As mãos foram trocadas!";
                 } else {
+                    esconderCartaEspecial();
                     mensagemUNO.textContent = `Robô comprou e jogou: ${novaCarta.nome}`;
+                    cartaAtual = novaCarta;
                 }
 
                 if (verificarFimDeJogo("robo")) return;
             }
         } else {
-            mensagemUNO.textContent = `Robô passou a vez.`;
+            mensagemUNO.textContent = "Robô passou a vez.";
         }
     }
 
@@ -234,6 +243,19 @@ function voltarParaCapa() {
 function toggleAjuda() {
     const modal = document.getElementById("ajudaModal");
     modal.classList.toggle("hidden");
+}
+
+function mostrarCartaEspecial(carta) {
+    const area = document.getElementById("cartaEspecialUsada");
+    const imgDiv = document.getElementById("imagemEspecial");
+    area.classList.remove("hidden");
+    imgDiv.innerHTML = `<img src="${carta.imagem}" alt="${carta.nome}" />`;
+}
+
+function esconderCartaEspecial() {
+    const area = document.getElementById("cartaEspecialUsada");
+    area.classList.add("hidden");
+    document.getElementById("imagemEspecial").innerHTML = "";
 }
 
 iniciarJogoUNO();

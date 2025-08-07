@@ -17,6 +17,9 @@ const cartas = [
   { nome: "Pescador", imagem: "imagens/16.png", elemento: "agua", valor: 8 },
   { nome: "Lenhador", imagem: "imagens/17.png", elemento: "terra", valor: 5 },
   { nome: "Vampiro", imagem: "imagens/18.png", elemento: "fogo", valor: 10 },
+  { nome: "Soldador", imagem: "imagens/27.png", elemento: "fogo", valor: 7 },
+  { nome: "Aventureiro", imagem: "imagens/28.png", elemento: "terra", valor: 8 },
+  { nome: "Tubarao", imagem: "imagens/29.png", elemento: "agua", valor: 9 },
 ];
 
 let cartaSelecionada = null;
@@ -31,8 +34,56 @@ const resultadoEl = document.getElementById("resultado");
 const placarContainer = document.createElement("div");
 placarContainer.id = "placarContainer";
 
-// Gerar 5 cartas aleatórias no início
-let cartasEmJogo = [];
+const eventos = [
+  {
+    nome: "🌧️ Chuva Forte",
+    descricao: "Cartas de fogo perdem 2 de valor!",
+    efeito: (jogador, robo) => {
+      if (jogador.elemento === "fogo") jogador.valor -= 2;
+      if (robo.elemento === "fogo") robo.valor -= 2;
+    }
+  },
+  {
+    nome: "🌋 Erupção Vulcânica",
+    descricao: "Cartas de terra não vencem nesta rodada!",
+    efeito: (jogador, robo, resultado) => {
+      if (jogador.elemento === "terra" && resultado.vencedor === "jogador") {
+        resultado.vencedor = "empate";
+        resultado.mensagem += " (bloqueado pela erupção)";
+      }
+      if (robo.elemento === "terra" && resultado.vencedor === "robo") {
+        resultado.vencedor = "empate";
+        resultado.mensagem += " (bloqueado pela erupção)";
+      }
+    }
+  },
+  {
+    nome: "🌊 Maré Alta",
+    descricao: "Cartas de água ganham 1 de valor!",
+    efeito: (jogador, robo) => {
+      if (jogador.elemento === "agua") jogador.valor += 1;
+      if (robo.elemento === "agua") robo.valor += 1;
+    }
+  },
+  {
+    nome: "🌪️ Tempestade Caótica",
+    descricao: "Elementos ignorados, vence só quem tiver maior valor!",
+    efeito: (jogador, robo, resultado, ignorar) => {
+      ignorar.valorFinal = true;
+    }
+  },
+  {
+    nome: "🧊 Gelo Total",
+    descricao: "Robô não pode jogar cartas de fogo!",
+    efeito: (_, __, ___, ____, restricoes) => {
+      restricoes.proibirFogoRobo = true;
+    }
+  }
+];
+
+let eventoAtual = null;
+let eventoProximaRodada = null; // Evento que será aplicado na próxima batalha
+
 function gerarCartasIniciais() {
   cartasEmJogo = [];
   deckEl.innerHTML = "";
@@ -52,6 +103,7 @@ function gerarCartasIniciais() {
   });
 }
 
+let cartasEmJogo = [];
 gerarCartasIniciais();
 
 function selecionarCarta(index) {
@@ -63,31 +115,48 @@ function selecionarCarta(index) {
 
 fightBtn.addEventListener("click", () => {
   if (!cartaSelecionada) {
-    resultadoEl.innerHTML = `
-      <p style="color: red; font-weight: bold; font-size: 16px; margin: 10px 0;">
-        ⚠️ Por favor, selecione uma carta antes de batalhar!
-      </p>
-    `;
+    resultadoEl.innerHTML = `<p style="color: red; font-weight: bold; font-size: 16px; margin: 10px 0;">⚠️ Por favor, selecione uma carta antes de batalhar!</p>`;
     return;
   }
-
   batalhar();
 });
 
-function voltarParaCapa() {
-  window.location.href = "index.html";
-}
-
 function batalhar() {
   document.getElementById("mensagemDica").style.display = "none";
+  const ignorarElemento = { valorFinal: false };
+  const restricoes = { proibirFogoRobo: false };
 
-  if (!cartaSelecionada) {
-    alert("Escolha uma carta primeiro!");
-    return;
+  // Aplica evento da rodada passada (se houver)
+  if (eventoProximaRodada) {
+    eventoAtual = eventoProximaRodada;
+    eventoProximaRodada = null;
+    mostrarEventoNaTela(eventoAtual, true); // mostrar como "ativo"
+  } else {
+    eventoAtual = null;
   }
 
-  const cartaRobo = escolherCartaRoboAdaptativa(cartaSelecionada);
-  const resultado = calcularResultado(cartaSelecionada, cartaRobo);
+  let cartaRobo = escolherCartaRoboAdaptativa(cartaSelecionada);
+
+  if (eventoAtual?.nome === "🧊 Gelo Total") {
+    while (cartaRobo.elemento === "fogo") {
+      cartaRobo = escolherCartaRoboAdaptativa(cartaSelecionada);
+    }
+  }
+
+  const jogador = { ...cartaSelecionada };
+  const robo = { ...cartaRobo };
+
+  if (eventoAtual) {
+    eventoAtual.efeito(jogador, robo, {}, ignorarElemento, restricoes);
+  }
+
+  let resultado = ignorarElemento.valorFinal
+    ? calcularPorValorApenas(jogador, robo)
+    : calcularResultado(jogador, robo);
+
+  if (eventoAtual && eventoAtual.efeito.length >= 3) {
+    eventoAtual.efeito(jogador, robo, resultado, ignorarElemento, restricoes);
+  }
 
   if (resultado.vencedor === "jogador") pontosJogador++;
   else if (resultado.vencedor === "robo") pontosRobo++;
@@ -96,24 +165,22 @@ function batalhar() {
     criarPlacar();
     placarCriado = true;
   }
-
   atualizarPlacar();
 
   resultadoEl.innerHTML = `
     <div class="result-card surgir">
       <p><strong>Sua carta:</strong></p> 
-      <img src="${cartaSelecionada.imagem}" alt="${cartaSelecionada.nome}" />
+      <img src="${jogador.imagem}" alt="${jogador.nome}" />
     </div>
     <div class="result-card surgir-delay">
       <p><strong>Carta do robô:</strong></p>
-      <img src="${cartaRobo.imagem}" alt="${cartaRobo.nome}" />
+      <img src="${robo.imagem}" alt="${robo.nome}" />
     </div>
   `;
 
   setTimeout(() => {
     const mensagemDiv = document.createElement("div");
     mensagemDiv.style.width = "100%";
-    mensagemDiv.style.marginTop = "0px";
     mensagemDiv.classList.add("fade-in");
     mensagemDiv.innerHTML = `<strong>${resultado.mensagem}</strong>`;
     resultadoEl.appendChild(mensagemDiv);
@@ -127,16 +194,13 @@ function batalhar() {
 
       const emojiImg = pontosJogador >= 3 
         ? '<img src="./imagens/batata-feliz.png" alt="Batata feliz" class="emoji-final" />' 
-        : '<img src="./imagens/emoji-batata-triste.png" alt="Batata triste" class="emoji-final" />';
+        : '<img src="./imagens/batata-triste.png" alt="Batata triste" class="emoji-final" />';
 
       const mensagem = pontosJogador >= 3 
         ? "Parabéns! Você venceu o jogo!" 
         : "Que pena! O robô venceu o jogo.";
 
-      resultadoFinal.innerHTML = `
-        ${emojiImg}
-        ${mensagem}
-      `;
+      resultadoFinal.innerHTML = `${emojiImg}${mensagem}`;
 
       const botaoReiniciar = document.createElement("button");
       botaoReiniciar.textContent = "🔁 Jogar Novamente";
@@ -145,12 +209,43 @@ function batalhar() {
 
       resultadoFinal.appendChild(botaoReiniciar);
       resultadoEl.appendChild(resultadoFinal);
-
     } else {
       substituirCartaJogador();
     }
+
+    // Sorteia evento para próxima rodada
+    if (Math.random() < 0.3) {
+      eventoProximaRodada = eventos[Math.floor(Math.random() * eventos.length)];
+      mostrarEventoNaTela(eventoProximaRodada, false); // mostrar como "próximo"
+    } else {
+      eventoProximaRodada = null;
+    }
+
   }, 900);
 }
+
+
+function mostrarEventoNaTela(evento, ativo = false) {
+  const container = document.getElementById("eventosContainer");
+
+  const eventoDiv = document.createElement("div");
+  eventoDiv.classList.add("evento-aleatorio");
+  eventoDiv.style.backgroundColor = ativo ? "#ffefc5" : "#d3eaff";
+  eventoDiv.innerHTML = `
+    <strong>${evento.nome}</strong><br/>
+    <span>${evento.descricao}</span><br/>
+    <small>${ativo ? "🌟 Aplicado nesta rodada!" : "🔮 Próxima rodada!"}</small>
+  `;
+
+  container.appendChild(eventoDiv);
+
+  setTimeout(() => {
+    eventoDiv.classList.add("fade-out");
+    setTimeout(() => eventoDiv.remove(), 500);
+  }, 6000);
+}
+
+
 
 function substituirCartaJogador() {
   const novaCarta = cartas[Math.floor(Math.random() * cartas.length)];
@@ -187,27 +282,23 @@ function substituirCartaJogador() {
 }
 
 function calcularResultado(cartaJogador, cartaRobo) {
-  const venceDe = {
-    terra: "agua",
-    agua: "fogo",
-    fogo: "terra"
-  };
+  const venceDe = { terra: "agua", agua: "fogo", fogo: "terra" };
 
   if (cartaJogador.elemento === cartaRobo.elemento) {
-    if (cartaJogador.valor > cartaRobo.valor) {
-      return { vencedor: "jogador", mensagem: "Você venceu!" };
-    } else if (cartaJogador.valor < cartaRobo.valor) {
-      return { vencedor: "robo", mensagem: "O robô venceu!" };
-    } else {
-      return { vencedor: "empate", mensagem: "Empate!" };
-    }
+    if (cartaJogador.valor > cartaRobo.valor) return { vencedor: "jogador", mensagem: "Você venceu!" };
+    if (cartaJogador.valor < cartaRobo.valor) return { vencedor: "robo", mensagem: "O robô venceu!" };
+    return { vencedor: "empate", mensagem: "Empate!" };
   }
 
-  if (venceDe[cartaJogador.elemento] === cartaRobo.elemento) {
+  if (venceDe[cartaJogador.elemento] === cartaRobo.elemento)
     return { vencedor: "jogador", mensagem: "Você venceu!" };
-  } else {
-    return { vencedor: "robo", mensagem: "O robô venceu!" };
-  }
+  return { vencedor: "robo", mensagem: "O robô venceu!" };
+}
+
+function calcularPorValorApenas(cartaJogador, cartaRobo) {
+  if (cartaJogador.valor > cartaRobo.valor) return { vencedor: "jogador", mensagem: "Você venceu (sem elementos)!" };
+  if (cartaJogador.valor < cartaRobo.valor) return { vencedor: "robo", mensagem: "O robô venceu (sem elementos)!" };
+  return { vencedor: "empate", mensagem: "Empate!" };
 }
 
 function criarPlacar() {
@@ -243,7 +334,10 @@ function resetarJogo() {
   document.getElementById("mensagemDica").style.display = "block";
 }
 
-// 🔥 Lógica de escolha adaptativa do robô
+function voltarParaCapa() {
+  window.location.href = "index.html"; // ou o nome real da sua página principal
+}
+
 function escolherCartaRoboAdaptativa(cartaJogador) {
   const ultimos = historicoElementosRobo.slice(-2);
   let elementoProibido = null;

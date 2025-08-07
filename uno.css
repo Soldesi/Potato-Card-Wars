@@ -86,7 +86,7 @@ button:hover {
 
 #turnoInfo {
   font-size: 18px;
-  margin-top: 10px;
+  margin-top: 26px;
   color: #313131;
   font-weight: bold;
 }
@@ -156,7 +156,7 @@ button:hover {
 }
 
 .ajuda-conteudo {
-  background-color: #fff;
+  background-color: #fffbe6;
   padding: 30px;
   border-radius: 16px;
   max-width: 500px;
@@ -209,3 +209,24 @@ button:hover {
   margin-top: 1rem;
   text-align: center;
 }
+#cartaEspecialUsada {
+  position: fixed;
+  top: 205px; /* Abaixo do botão de ajuda */
+  right: 35px;
+  padding: 10px;
+  border-radius: 10px;
+  z-index: 1000;
+  text-align: center;
+}
+
+#cartaEspecialUsada p {
+  margin: 0;
+  font-weight: bold;
+  color: #7a4e00;
+}
+
+#cartaEspecialUsada img {
+  width: 200px;
+  margin-top: 5px;
+}
+
